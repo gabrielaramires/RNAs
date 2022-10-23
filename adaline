@@ -1,0 +1,65 @@
+close all
+clear all
+clc
+    %TREINAMENTO
+  pkg load io
+  entradas = xlsread("entradas.xlsx");%faz a leitura do excel contendo as entradas e saídas desejadas
+  y = size(entradas); %pega tamanho da matriz
+  n1 = y(1); %quantidade de linhas
+  n2 = y(2); %quantidade de colunas
+  resultado_esperado = entradas(:,n2);
+  amostra = entradas;
+  amostra(:,2:end) = entradas(:,1:end-1);
+  amostra(:,1) = -1;
+  disp('O peso inicial w vale: ')
+  w = rand(1,n2)%vetor de pesos
+  taxa_aprendizagem = 0.0025;
+  precisao = 0.000001;
+  epoca = 0;
+  eqm = 0;
+  i = 1;
+  
+  for i = 1:n1
+    eqm_anterior = eqm;
+    erro1 = 1;
+    while erro1 >= precisao
+      u = amostra(i,:)*w'; %pega a linha referente ao índice
+      r = taxa_aprendizagem*(resultado_esperado(i,1)-u)*amostra(i,:);
+      w = w + r;
+      epoca = epoca + 1;
+      eqm = eqm + ((resultado_esperado(i,1) - u)^2);
+      eqm = eqm/n1;
+      eqmatual = eqm;
+      erro = eqmatual - eqm_anterior;
+      erro1= abs(erro);
+    end
+    i = i + 1;
+  end
+  
+  disp('O peso w vale: ')
+  disp(w)
+  disp('Quantidade de épocas necessárias: ')
+  disp(epoca)
+  if erro == 0
+    disp('Não houve erro')
+  end
+  
+   %OPERAÇÃO
+ dados = xlsread("dados.xlsx");
+ y = size(dados);%pega tamanho da matriz
+ m1 = y(1); %quantidade de linhas
+ m2 = y(2); %quantidade de colunas
+ operacao = ones(m1,m2+1);
+ operacao(:,2:end) = dados(:,1:end);
+ operacao(:,1) = -1;
+ i = 1;
+ 
+ for i=1:m1
+   u = operacao(i,:)*w';
+   if u>=0
+        y = 1
+      else
+        y = -1
+      end
+    i = i + 1;
+ end
